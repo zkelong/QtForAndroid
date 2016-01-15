@@ -46,3 +46,8 @@ void FileExplorer::onViewModeChanged(const QString &mode)
                              QListView::ListMode :
                              QListView::IconMode );
 }
+
+/*QListWidget的创建与其他普通Qt Widget一样，只需要使用new操作符分配一个对象即可。
+ 如果将它作为子控件，可以指定一个父，获知交给布局管理器即可。
+
+*/

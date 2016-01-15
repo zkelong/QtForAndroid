@@ -54,3 +54,7 @@ int main(int argc, char *argv[])
 
     return a.exec();
 }
+/*
+Android上，标题对齐方式的设置没有生效。
+GroupBox设置是可选的，但标题栏上的复选框太小，但所幸点击文本区域也可修改。
+**/

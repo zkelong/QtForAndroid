@@ -375,5 +375,170 @@
 /*对象树与生命周期
     使用Qt类库是，很多类的构造函数，都有一个parent参数。
     构造一个对象是为其指定父对象，这是Qt类库的一个显著特点。
-    查看QObject类的源码，内部有个d_prt成员变量，类型时QScopedPointer<QObjcetData>，而QObjectData内部有一个QObjectList类型的名为children
+    查看QObject类的源码，内部有个d_prt成员变量，类型时QScopedPointer<QObjcetData>，而QObjectData内部有一个QObjectList类型的名为children的成员
+    children链表，存储了一个QObject对象的所有孩子。
+    构造对象时指定了父对象，那么该对象就会被加入父对象的children链表中，当父对象销毁时，会遍历孩子链表，尝试销毁每一个孩子。
+
+    QObject对象在析构时，会断开所有信号与槽连接，删除所有孩子，吧自己从父对象中移除出去。
+    创建对象没指定父对象，该销毁时销毁，可能导致内存泄露。
+
+    QObject类中有一个属性：objectName
+        Q_PROPERTY(QString objectName \     //Q_PROPERTY宏定义
+                    READ objectName \
+                    WRITE setObjectname \
+                    NOTIFY objectNameChange)
+        可以通过objectName()方法获取对象的名字，通过setObjectName()设定对象名字，当对象名字发生改变时会有信号：objectNameChange().
+        对象的名字属性，就可以用于查找对象，查找对象方法：findChild()和findChildren()，一个返回单独对象，一个返回对象列表。
+        例：
+            //返回名为"button1"，类型为QPushButton的孩子
+            QPushButton * button = parentWidget->findChild<QPushButton *>("button1");
+            //返回类型为QListWidget的孩子
+            QListWidget * list = parentWidget->findChild<QListWidget *>();
+            //直接孩子
+            QPushButton *button = parentWidget->findChild<QPushButton *>("button1", Qt::FindDirectChildOnly);
+            //返回所有名为"widgetname"的QWidget类型的孩子列表
+            QList<QWidget *> widgets = paretnWidget.findChildren<QWidget *>("widgetname");
+            //名为"button1"或"Button1"的
+            QPushButton *button = parentWidget->findChild<QPushButton *>(QRegExp("[Bb]utton1"));
+**/
+
+/*智能指针
+    C++常在类的构造函数中分配资源，在析构函数中释放资源，这种做法是RAII（Resource Acquisition Is Initialization）机制的一种。
+    若无智能指针，必须保证new出来的对象在合适的时候被delete。
+    虽然C++没有语言层面的GC，不能像Java无视资源管理，但智能指针可以在很大程度上解放我们，可以把我们从资源管理的泥沼中拖出来。
+    1.QPointer
+        QPointer<T>, 模板类，监视QObject及其派生类的指针。QPointer重载了"*, /, -, <"等操作符，你可以像使用普通C++指针一样使用QPointer。
+        测试指针指向的对象是否存在：isNull()    //如果你保留的是C++原始指针，它指的对象在别处被删除是，指针变为野指针，对它的访问会造成内存错误。
+        例：
+            QPointer<QLabel> label = new QLabel("&Status");
+            ...
+            if(label) { //if(!label.isNull()), if(label != 0)
+                label->show();
+            }
+    2.QSharePointer
+        QSharePointer<T>，内部使用了引用计数，当QSharePointer对象被删除时，如果它持有的指针没有被别的对象引用（引用计数为0），则该指针（所指对象）会被删除。
+        一旦原始指针被一个QSharePointer对象管理，则该指针不应当被直接传递给另一个QSharePointer对象，并且不能直接在别处删除该指针。
+        而QSharePointer对象可以安全地在各个模块间传递，可以通过“=”操作符或者拷贝函数将一个QSharePointer对象传递给另一个，此时内部引用计数会增加，直到所有的QSharePointer对象被删除，该对象才被删除
+        当你不关注一个对象在何时何处被删除，而有希望自己使用时不被删除，同时希望不用时被自动删除，可以使用QSharePointer。即一个对象需要在多个模块间传递，使用并保证其能够适时被释放。
+    3.QWeakPointer
+        QWeakPointer<T>对C++指针进行了弱化引用，不能直接直接解引用来使用原始的C++指针，当时可以通过isNull()，!()等方法来判定原始的C++指针是否有效
+        可以通过QWeakPointer的data()方法拿到原始指针，但不能保证拿到的C++指针在使用时不被别的模块删除。
+        QWeakPointer一般是从QSharePointer对象或另一个QWeakPointer对象创建，若直接调用无参构造函数，创建一个指向nothing的QWeakPointer对象，无实际意义，只能在其他地方使用"="赋值。
+        QWeakPointer维护的指针如果指向QObect及其派生类，作用同QPointer。
+        多数时候必须和QSharePointer使用，用起来较为麻烦，很多人宁愿使用简单的QPointer.
+        QWeakPointer可以升级为QSharePointer使用（使用QWeakPointer::toStrongRef()方法或QWeakPointer拷贝函数或QWeakPointer的"="操作符，但你需要判断升级后的QSharedPointer是否为空。
+            QSharedPointer<Status> status(new Status);
+            QWeakPointer<Status> weakRef(status);
+            QSharedPointer strong weakRef.toStrongRef();
+            QSharedPointer strong2 weakRef;
+            if(strong)
+            {
+                strong->printStatus("Weak promote to striong");
+            }
+            else
+            {
+                qDebug() << "weak promote to strong but " \
+                    "Status object had been delete";
+            }
+    4.QScopedPointer
+        QScopedPointer包装了使用new操作符在堆上动态分配的对象，能够包装动态创建的对象在任何时候都可以被正确的删除。
+        QScopedPointer一旦获取了对象管理权，你就不能错它哪里要回来了。而且独占管理权，从不考虑转让给被的对象或只能指针。
+        QScopedPointer可用于多出口函数中的对象动态资源的管理，尤其从满了各种判断条件，return满天飞的函数。
+        QScopedPointer可以定制删除策略，内置了4中删除器：
+            a.QScopedPointerDeleter， 使用delete删除有new分配的对象。--默认
+            b.QScopedPointerArrayDeleter，使用delete[]删除由new[]分配的对象。
+            c.QScopedPointerPodDeleter，使用free()删除由malloc()分配的对象。
+            d.QScopedPointerDelteLater，针对QObject及派生类的对象，使用deleteLater()来延迟删除对象。
+        可以实现自己的删除器，只需在删除器中提供一个静态成员函数：void clieanup(T *pointer)。
+    5.QObjectCleanHandler
+        QObjectCleanHandler很有用的辅助类，它是QPointer和QScopedPointer的合体
+        QObjectCleanHandler可以监视多个QObject对象的生命周期。当被监视的对象在别处被删除时会自动从QObject中移除，可以通过isEmpty()来判定QObjectCleanHandler中是否还有对象。
+        删除所有被监视的对象：clear()   //析构时也会删除
+        可以作为资源清理器使用，若你有在一个多出口函数中有多个QObject（或派生类）对象需要管理，就可以使用它。
+*/
+
+/*动态类型转换
+	当你在在即的类声明中使用了Q_OBJECT后，就可以使用：动态类型转换
+	QBOJECT有个方法inherits(const char* className)，可以判断一个QObject类（或其派生类）的实例是否从给定的名字的类继承而来。
+	例：
+		QPushButton *button = new QPushButton(widget);
+		button->inherits("QObject"); //true
+		button->inherits("QWidget"); //true
+		button->inherits("QAbstractButton"); //true
+		button->inherits("QLayoutItem"); //false
+	若想在确认一个对象的类型后做与该类型相关的事情，最好是使用qobject_cast()函数。它是模板函数：
+		template<class T>
+		inline T qobject_cast(QObject * object)
+		{
+				typedef typename QtPrivate::remove_cv<yptename \
+					QtPrivate::remove_pointer<T>::type ObjType;
+				Q_STATIC_ASSERT_X(\
+					QtPrivate::HasQ_OBJECT_Macro<ObjectType>::Value,
+					"qobject_cast requires the type to have a Q_OBJECT macro");
+				return static_cast<T>(reinterpret_cast<T>(object) \
+					->staticMetaObject.cast(object);
+		}
+	qobject_cast()会把给定的QObject类型转换成你想要的类型，失败返回0.
+	qojbect_cast()认为一个类是他自己的派生类（可以用inherits()方法判断一下）
+	使用：
+		QObject * object = new QPushButton(widget);
+		//button == (QAbstractButton*)object
+		QAbstractButton * button = \
+			qojbect_cast<QPushButton *>(object);
+		//radio == 0
+		QRadioButton *radio = \
+			qobject_cast<QRadioButton *>(object);	
+**/
+
+/*国际化
+	Qt提供了Qt语言家（QtLinguist）、lupdate和lrelease来进行翻译处理。
+	lupdate用以提取项目源文件黄总可翻译文本，生成公语言家使用的ts文件；
+	lrelease根据ts文件，生成最终的公应用程序使用的qm文件；
+	Qt Linguist是图形化工具，加载ts文件，将防疫结果写入ts文件，也可以调用lrelease生成qm文件。
+	要使用Qt的国际化机制，最好在类中声明中使用Q_OBJECT宏，这样可以在你类方法中使用tr()函数标记待翻译的文本。
+	如果不使用Q_OOBJECT宏，只能使用QOject类的静态版本的tr()方法，不优雅，敲字多，生产效率不高，还可能无法区别不同上下为环境下相同文本需要不同译本的情况。
+	1.字符串国际化方法
+		a.对于UI界面的字符串，使用QObject::tr()函数，使用Q_OBJECT宏的QOject派生类中可以直接使用tr()方法。非QObject派生类可以使用QBject::tr()或QCoreApplication::translate()方法。非QObject派生类可以使用QBject方法。
+		b.使用QT_TR_NOOP或QT_TRANSLATE_NOOP标记需要翻译的文本，然后使用tr()。
+		c.使用QString::arg()来拼接字符串，在arg()方法内使用tr()。
+	2.创建译本
+		a.在工程文件中添加TRANSLATIONS变量，以qnote.pro为例：TRANSLATIONS = qnote_zh_CN.ts.qnote_EN.ts
+		b.打开Qt命令行环境，进入qnote项目目录，执行命令“lupdate qnote.pp”, 就会生成pro文件中TRANSLATEIONS指定的ts文件。
+		c.使用Qt语言家（文件菜单-打开子菜单）打开ts文件，人工翻译，保存（ts文件为xml文件，可以使用文本编辑器编辑它）
+		d.单击Qt Linguist文件菜单中的发布子菜单，生成译文文件qnote_zh_CN.qm; 也可以代开Qt命令行环境，切换到ts文件所在目录，使用“lrelease qnote_zh_CN.ts”来生成译文文件。
+	3.装载译文文件
+		创建了qm文件，在程序黄总加载特定语言的译文文件。
+			int main(int argc, char *argv[])
+			{
+				QAppliction a(argc, argv);
+				...
+				QTranslator translator();
+				translator.load("qnote_zh_CN.qm");
+				a.installTranslator(&translator);
+				...
+				return a.exec();
+			}
+		实际开发中国，需要检测系统语言系统（QLcale来检测），还可能有多个模块都有译文文件（可以定义多个QTranslator实例，每个实例记载一个译文文件，然后都按装到QApplication的实例上）
+		Qt框架本身针对不同语言也有译文文件，如果你使用了QT框架的某些默认组件，如消息框，想要让它上面的文字与系统语言环境一致，也应当加载Qt的译文文件。
+		Qt文档中有详细说明，索引“internationalization”。
+	4.运行是改变语言
+		运行软件时，改变语言。通过检查语言变化来实现。
+		当语言变化时，Qt框架会产生一个类型为QEvent::LanguageChange的事件，可以重写QObject::changeEvent(QEvent*)方法来处理它。
+			比如可以重新装载译文文件，然后把需要国际化的文本更新一下。
+		例
+			void YourWidget::chagneEvent(QEvent *event) 
+			{
+				if(e->teyp() == QEvent::LanguageChange)
+				{
+					titleLabel->setText(tr("Document Title"));
+					...
+					okPushButton->setText(tr("&OK"));
+				}
+				else
+				{
+					QWidget::chageEvent(event);
+				}
+			} //把不处理的事件交给父类处理
+		
+		
 **/
