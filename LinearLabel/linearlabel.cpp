@@ -15,6 +15,8 @@ LinearLabel::LinearLabel(const QString &text, QWidget *parent)
     , m_penWidth(1)
 {
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
+    //设置尺寸策略：水平方向策略Preferred，允许布局管理器根据情况设置LinearLabel的宽度
+    //垂直方向策略为Fixed，布局管理器会保存sizeHint()返回的高度不变。
 }
 
 LinearLabel::~LinearLabel()
@@ -22,6 +24,9 @@ LinearLabel::~LinearLabel()
     if(m_linearGradient) delete m_linearGradient;
 }
 
+//调用该方法时，会动态生成一个QLinearGradient对象保存渐变设置。
+//QLinearGradient是线性渐变类起始(setStart()), 结尾(setFinalStop()), 关键节点(setColorAt())
+//先创建一个支持渐变的QBrush对象，然后使用此对象创建一个画笔（QPen对象），再把画笔给画师QPainter，画师绘制文本时就可以用渐变效果了
 void LinearLabel::setColorAt(qreal position, const QColor &color)
 {
     if(!m_linearGradient)
@@ -41,7 +46,7 @@ void LinearLabel::clearGradient()
     }
 }
 
-QSize LinearLabel::sizeHint() const
+QSize LinearLabel::sizeHint() const   //设置字体
 {
     if(m_text.isEmpty()) return QSize();
     QFontMetrics fm = fontMetrics();

@@ -73,6 +73,35 @@
 		向开发者暴露基于item的接口。
 		类似Excel，表格形式显示数据。
 		demo: ProgramSkillSurvey
-			
+**/
+
+/*自定义窗口部件
+	要想改变部件的外观，重写QWidget已经定义的paintEvent()函数
+	1.使用QPainter绘图
+		Qt中，QPainter类用来在可绘制设备上绘图。
+		QPainter提供了高度优化的函数来满足大多数GUI应用的绘画需求。
+		可绘制文本和图片，可以完成各种二维变换（平移，旋转，缩放等）
+		QPainter可以在继承自QPaintDevice的对象上绘图，如：QWidget, QImage, QPixmap等。
+		
+		绘制文本：drawText()，有多种重载版本，支持众多选项，如对齐，展开Tab键等
+		绘制矩形：drawRct()系列重载函数。内部填充用QPainter对象当前使用的画刷（QBrush对象）决定。不填充：QPainter::setBrush(Qt::NoBrush);只填充不描边：fillRect()
+		与绘图相关概念：画布，画笔，画刷; 
+			QPaintDevice提供画布，如QWidget、QImage等类，都可以当画布；
+			QPen类代表画笔，一个QPen可以设置颜色，线宽，线形（虚线，实线）等属性
+			QBrush实现画刷，可设置颜色，纹理（通常是一张图片，由QPixmap或QImage代表），风格（如NoBrush，SolidPattern等）等属性。
+			QPainter:
+				绘制多边形：drawPolygon()
+				圆角矩形：drawRoundedRect()
+				画点：drawPoint(), drawPoints()
+				画线：drawLine(), drawLines, drawPolyline()
+				扇形：drawPie()
+				椭圆：drawEllipse()
+				画弦：drawChord()
+	2.渐变文字
+		例子：linearLabel
+		实现自定义组件的关键方法有两个：
+		sizeHint()：布局管理器和窗口管理系统会参考这个函数的返回值设置LinearLabel的尺寸（它们还会参考sizePolicy()方法返回的尺寸策略）
+		paintEvent()：绘制自己。
+				
 		
 **/
