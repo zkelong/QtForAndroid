@@ -1,0 +1,170 @@
+
+Goolgle
+
+Go语言最主要的特性：
+? 自动垃圾回收
+? 更丰富的内置类型
+? 函数多返回值
+? 错误处理
+? 匿名函数和闭包
+? 类型和接口
+? 并发编程
+? 反射
+? 语言交互性
+
+自动垃圾回收：
+内存泄露的最佳解决方案是在语言级别引入自动垃圾回收算法（Garbage
+Collection，简称GC）。所谓垃圾回收，即所有的内存分配动作都会被在运行时记录，同时任何对
+该内存的使用也都会被记录，然后垃圾回收器会对所有已经分配的内存进行跟踪监测，一旦发现
+有些内存已经不再被任何人使用，就阶段性地回收这些没人用的内存。
+
+更丰富的内置类型：
+Go语言也内置了一
+些比较新的语言中内置的高级类型，比如C#和Java中的数组和字符串。除此之外， Go语言还内置
+了一个对于其他静态类型语言通常用库方式支持的字典类型（map）
+
+另外有一个新增的数据类型：数组切片（Slice） 。
+
+函数多返回值：
+在Go语言中，上述的例子可以修改为以下的样子：
+func getName()(firstName, middleName, lastName, nickName string){
+return "May", "M", "Chen", "Babe"
+}
+因为返回值都已经有名字，因此各个返回值也可以用如下方式来在不同的位置进行赋值，从
+而提供了极大的灵活性：
+func getName()(firstName, middleName, lastName, nickName string){
+firstName = "May"
+middleName = "M"
+lastName = "Chen"
+nickName = "Babe"
+return
+}
+
+并不是每一个返回值都必须赋值，没有被明确赋值的返回值将保持默认的空值。而函数的调
+用相比C/C++语言要简化很多：
+fn, mn, ln, nn := getName()
+如果开发者只对该函数其中的某几个返回值感兴趣的话，也可以直接用下划线作为占位符来
+忽略其他不关心的返回值。下面的调用表示调用者只希望接收lastName的值，这样可以避免声
+明完全没用的变量：
+_, _, lastName, _ := getName()
+
+Go语言引入了3个关键字用于标准的错误处理流程，这3个关键字分别为defer、 panic和
+recover。
+
+在Go语言中，所有的函数也是值类型，可以作为参数传递。 Go语言支持常规的匿名函数和
+闭包，比如下列代码就定义了一个名为f的匿名函数，开发者可以随意对该匿名函数变量进行传
+递和调用：
+f := func(x, y int) int {
+return x + y
+}
+
+
+类型和接口：
+Go语言的类型定义非常接近于C语言中的结构（struct），甚至直接沿用了struct关键字。
+Go语言并没有直接沿袭C++和Java的传统去设计一个超级复杂的类型系统，不支持继承
+和重载，而只是支持了最基本的类型组合功能。
+
+Go语言也不是简单的对面向对象开发语言做减法，它还引入了一个无比强大的“非侵入式”
+接口的概念，让开发者从以往对C++和Java开发中的接口管理问题中解脱出来。
+
+我们在实现Bird类型时完全没有任何IFly的信息。我们可以在另外一个地方定义这个IFly
+接口：
+type IFly interface {
+Fly()
+}
+这两者目前看起来完全没有关系，现在看看我们如何使用它们：
+func main() {
+var fly IFly = new(Bird)
+fly.Fly()
+}
+
+并发编程：
+Go语言引入了goroutine概念，它使得并发编程变得非常简单。通过使用goroutine而不是裸用
+操作系统的并发机制，以及使用消息传递来共享内存而不是使用共享内存来通信， Go语言让并
+发编程变得更加轻盈和安全。
+通过在函数调用前使用关键字go，我们即可让该函数以goroutine方式执行。 goroutine是一种
+比线程更加轻盈、更省资源的协程。 
+
+Go语言实现了CSP（通信顺序进程， Communicating Sequential Process）模型来作为goroutine
+间的推荐通信方式。在CSP模型中，一个并发系统由若干并行运行的顺序进程组成，每个进程不
+能对其他进程的变量赋值。进程之间只能通过一对通信原语实现协作。 Go语言用channel（通道）
+这个概念来轻巧地实现了CSP模型。 channel的使用方式比较接近Unix系统中的管道（pipe）概念，
+可以方便地进行跨goroutine的通信。
+
+package main
+import "fmt"
+func sum(values [] int, resultChan chan int) {
+sum := 0
+for _, value := range values {
+sum += value
+}
+resultChan <- sum // 将计算结果发送到channel中
+}
+func main() {
+values := [] int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+resultChan := make(chan int, 2)
+go sum(values[:len(values)/2], resultChan)
+go sum(values[len(values)/2:], resultChan)
+sum1, sum2 := <-resultChan, <-resultChan // 接收结果
+fmt.Println("Result:", sum1, sum2, sum1 + sum2)
+}
+
+反射：
+反射（reflection）是在Java语言出现后迅速流行起来的一种概念。通过反射，你可以获取对
+象类型的详细信息，并可动态操作对象。反射是把双刃剑，功能强大但代码可读性并不理想。
+
+Go语言的反射实现了反射的大部分功能，但没有像Java语言那样内置类型工厂，故而无法做
+到像Java那样通过类型字符串创建对象实例。
+
+语言交互性：
+由于Go语言与C语言之间的天生联系， Go语言的设计者们自然不会忽略如何重用现有C模块
+的这个问题，这个功能直接被命名为Cgo。 Cgo既是语言特性，同时也是一个工具的名称。
+
+在Go代码中，可以按Cgo的特定语法混合编写C语言代码，然后Cgo工具可以将这些混合的C
+代码提取并生成对于C功能的调用包装代码。开发者基本上可以完全忽略这个Go语言和C语言的
+边界是如何跨越的。
+与Java中的JNI不同， Cgo的用法非常简单，比如代码清单1-3就可以实现在Go中调用C语言标
+准库的puts函数。
+
+package main
+/*
+#include <stdio.h>
+*/
+import "C"
+import "unsafe"
+func main() {
+cstr := C.CString("Hello, world")
+C.puts(cstr)
+C.free(unsafe.Pointer(cstr))
+}
+
+第一个 Go 程序：
+每个Go源代码文件的开头都是一个package声明，表示该Go代码所属的包。包是Go语言里
+最基本的分发单位，也是工程管理中依赖关系的体现。要生成Go可执行程序，必须建立一个名
+字为main的包，并且在该包中包含一个叫main()的函数
+在包声明之后，是一系列的import语句，用于导入该程序所依赖的包。不得包含在源代码文件中没有用到的包，否则Go编译器会报编译错误。
+
+所有Go函数（包括在对象编程中会提到的类型成员函数）以关键字func开头。一个常规的
+函数定义包含以下部分：
+func 函数名(参数列表)(返回值列表) {
+// 函数体
+}
+对应的一个实例如下：
+func Compute(value1 int, value2 float64)(result float64, err error) {
+// 函数体
+}
+Go支持多个返回值。以上的示例函数Compute()返回了两个值，一个叫result，另一个是
+err。并不是所有返回值都必须赋值。在函数返回时没有被明确赋值的返回值都会被设置为默认
+值，比如result会被设为0.0， err会被设为nil。
+
+Go程序的代码注释与C++保持一致，即同时支持以下两种用法：
+/*
+块注释
+*/
+// 行注释
+
+Go
+程序并不要求开发者在每个语句后面加上分号表示语句结束
+
+
+

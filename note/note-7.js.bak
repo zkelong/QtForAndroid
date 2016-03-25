@@ -1,0 +1,18 @@
+/*网络编程	
+**/
+
+Qt SDK5.2的世界里，底层的socket编程依然是QTcpSocket和QUDPSocket。
+而上层应用协议的编程变得更加简单了，针对HTTP、FTP等常见协议。只需要使用统一的网络访问管理类库QNetworkAccessManager即可。
+
+Qt中，针对上层应用协议的网络访问API，就是围绕QNetworkAccessManager进行的。
+QNetworkAccessManager对象，可以使用它提供的一组标准方法来发送网络请求，而每个方法都会返回一个QNetWorkReply对象，这个对象代表了你发送的请求相应的反馈，即可以读取网络应答的元数据，又可以读取实体数据。
+QNetworkAccessManager的get(), post(), head(), put(), deleteResource(), sendCustomRequest()等方法可用于发送网络请求，http、ftp、https都小菜一碟，只要构造一个QNetworkRequest对象传递给它们就行。
+
+1.http编程：
+QNetQNetworkAccessManager的接口及其枚举类型Operation，还有QNetworkRequest的接口及其KnownHeader、Attribute等枚举类型，为http设计。
+QNetworkAccessManager也支持下载、上传等常见的ftp操作。
+httpTestTool例子
+QNetworkAccessManager网络编程常涉及的4个类：
+	1.QNetworkAccessManager是中心
+
+
