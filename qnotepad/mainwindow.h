@@ -10,13 +10,13 @@
 
 class MainWindow : public QWidget
 {
-    Q_OBJECT
+    Q_OBJECT    //要使用信号与槽、动态属性、国际化等Qt提供的功能，就必须继承QObject类并放置Q_OBJECT宏
 
 public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-public slots:
+public slots:   //槽--slots是一个空宏
     void onNotesUpdate();
 
 protected:
@@ -52,7 +52,7 @@ private:
     int m_nStartNote;
     int m_nEndNote;
 
-    NoteViewWidget *m_noteView;
+    NoteViewWidget *m_noteView;     //笔记Widget
     QPen m_framePen;
     QPen m_focusFramePen;
     int m_nPressRect;

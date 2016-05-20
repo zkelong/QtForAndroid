@@ -11,28 +11,30 @@
 #include <QDebug>
 #include <QCoreApplication>
 
+//构造函数
 MainWindow::MainWindow(QWidget *parent)
     : QWidget(parent)
-    , m_nStartNote(-1)
+    , m_nStartNote(-1)  //初始化--c++也这么干？？
     , m_nEndNote(-1)
-    , m_noteView(0)
-    , m_framePen(QBrush(QColor::fromRgb(50, 50, 50)),1)
-    , m_focusFramePen(QBrush(QColor::fromRgb(50, 50, 200)),4)
+    , m_noteView(0)     //初始化日记Widget为null
+    , m_framePen(QBrush(QColor::fromRgb(50, 50, 50)),1)     //画刷
+    , m_focusFramePen(QBrush(QColor::fromRgb(50, 50, 200)),4)   //画刷
     , m_nPressRect(-1)
     , m_bMoving(false)
 {
     QFont f(font());
     f.setPixelSize(16);
     setFont(f);
-    m_background = new QPixmap(":/background.png");
+    m_background = new QPixmap(":/background.png");     //调用资源文件，这么调？
     m_thumbBackground = new QPixmap(":/thumb_text_bg.png");
     m_thumbAdd = new QPixmap(":/thumb_add_new.png");
-    QNote::loadNotes(m_notes);
-    setContentsMargins(0,0,0,0);
+    QNote::loadNotes(m_notes);  //加载笔记
+    setContentsMargins(0,0,0,0);    //窗口编辑
 }
 
 MainWindow::~MainWindow()
 {
+    qDebug() << "~MainWindow";
     delete m_background;
     delete m_thumbAdd;
     delete m_thumbBackground;
@@ -51,14 +53,14 @@ void MainWindow::onNotesUpdate()
     }
 }
 
-void MainWindow::resizeEvent(QResizeEvent *e)
+void MainWindow::resizeEvent(QResizeEvent *e)   //构造函数完了及执行这个函数。
 {
     setupGeometry(e->size());
     if(m_noteView)m_noteView->setFixedSize(width(), height());
     QWidget::resizeEvent(e);
 }
 
-void MainWindow::paintEvent(QPaintEvent *event)
+void MainWindow::paintEvent(QPaintEvent *event)     //resizeEvent后执行，没添加一个笔记执行一次
 {
     QPainter painter(this);
     drawBackground(painter);
@@ -66,23 +68,22 @@ void MainWindow::paintEvent(QPaintEvent *event)
     drawThumbnails(painter);
 }
 
-void MainWindow::mousePressEvent(QMouseEvent *e)
+void MainWindow::mousePressEvent(QMouseEvent *e)    //鼠标按下事件，填充整个窗体的吧
 {
     QWidget::mousePressEvent(e);
     e->accept();
-    qDebug() << "mousePressEvent";
     m_pressedPos = e->pos();
     m_nPressRect = rectHitTest(m_pressedPos);
     if(m_nPressRect != -1) update();
 }
 
-void MainWindow::mouseMoveEvent(QMouseEvent *e)
+void MainWindow::mouseMoveEvent(QMouseEvent *e)    //鼠标移动事件，填充整个窗体的吧
 {
     e->accept();
     m_bMoving = true;
 }
 
-void MainWindow::mouseReleaseEvent(QMouseEvent *e)
+void MainWindow::mouseReleaseEvent(QMouseEvent *e)    //鼠标释放事件，填充整个窗体的吧
 {
     e->accept();
     QPoint releasePos = e->pos();
@@ -113,6 +114,7 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *e)
 
 void MainWindow::releaseGeometryRects()
 {
+    qDebug() << "releaseGeometryRects";
     int count = m_thumbRects.size();
     if(count > 0)
     {
@@ -124,7 +126,7 @@ void MainWindow::releaseGeometryRects()
     }
 }
 
-void MainWindow::setupGeometry(const QSize &size)
+void MainWindow::setupGeometry(const QSize &size)   //resizeEvent调用
 {
     releaseGeometryRects();
     int w = size.width();
@@ -245,6 +247,7 @@ void MainWindow::drawThumbnails(QPainter &painter)
 
 void MainWindow::initializeNoteView()
 {
+    qDebug() << "initializeNoteView";
     m_noteView = new NoteViewWidget(m_notes, this, Qt::FramelessWindowHint);
     m_noteView->setAttribute(Qt::WA_DeleteOnClose);
     m_noteView->setFixedSize(width(), height());
@@ -253,6 +256,7 @@ void MainWindow::initializeNoteView()
 
 int MainWindow::rectHitTest(QPoint &pos)
 {
+    qDebug() << "rectHitTest";
     int count = m_thumbRects.size();
     QRect * pRect = m_thumbRects.at(0);
     if(pRect->contains(pos))
@@ -272,6 +276,7 @@ int MainWindow::rectHitTest(QPoint &pos)
 
 void MainWindow::newNote()
 {
+    qDebug() << "newNote";
     bool ok;
     QString text = QInputDialog::getText(this, "新建笔记",
                                             "请输入标题:", QLineEdit::Normal,
@@ -287,6 +292,7 @@ void MainWindow::newNote()
 
 void MainWindow::openNote(QNote *note)
 {
+    qDebug() << "openNote";
     initializeNoteView();
     m_noteView->setNote(note);
     m_noteView->show();
@@ -294,6 +300,7 @@ void MainWindow::openNote(QNote *note)
 
 bool MainWindow::checkNoteAction(QPoint &pos)
 {
+    qDebug() << "checkNoteAction";
     int releaseRect = rectHitTest(pos);
     if(m_nPressRect == releaseRect)
     {

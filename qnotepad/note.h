@@ -9,11 +9,17 @@
 
 class QNote{
 public:
+    /**构造函数
+     * @param title 笔记标题
+     * @param content 笔记内容
+     */
     QNote(const QString &title, const QString &content)
         : m_strTitle(title), m_strContent(content)
     {
     }
 
+    /**构造函数
+     */
     QNote(const QNote &n)
         : m_strTitle(n.m_strTitle)
         , m_strContent(n.m_strContent)
@@ -31,8 +37,8 @@ public:
         return *this;
     }
 
-    static void loadNotes(QList<QNote*> & notes);
-    static void saveNotes(QList<QNote*> & notes);
+    static void loadNotes(QList<QNote*> & notes);   //加载
+    static void saveNotes(QList<QNote*> & notes);   //保存
 
     QString m_strTitle;
     QString m_strContent;
