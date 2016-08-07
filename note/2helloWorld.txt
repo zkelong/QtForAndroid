@@ -1,0 +1,32 @@
+1.Widget 项目
+2.基类-Widget；不选布局文件
+3.#include <QLabel>	
+4.#include <QVBoxLayout> //布局管理器
+5.Widget构造函数
+QVBoxLayout * layout = new QVBoxLayout();
+QLabel *hello = new QLabel("Hello Qt on Android");
+layout->addWidget(hello);
+setLayout(layout);
+
+
+Android环境配置
+
+Deploy configuration-Qt Deployment
+开发调试可以选择
+Deploy local Qt libraries to temporary directory--qt库部署策略，把Qt放到手机的一个临时目录，多个qt应用，但是公用这个目录
+
+
+
+查看链接设备--豌豆荚
+adb devices
+
+信号与槽
+关键字
+SIGNAL SLOT emit
+
+QObject::connect()--链接信号与槽
+参数：
+1.信号发送方
+2.发送的信号
+3.信号接受方
+4.响应的槽

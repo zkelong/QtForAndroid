@@ -62,16 +62,22 @@ void Widget::setupUI()
     QPushButton * submit = new QPushButton("提交", this);
     //没有用QObject::connect()函数链接信号和槽，因为Widget隔代继承QObject
     //QObject有静态和动态的connect()函数
+    //下面SIGNAL(clicked())--"2clicked";SLOT(onCancelButton())--"2onSubmit"
     connect(submit, SIGNAL(clicked()), this, SLOT(onSubmit()));
     QPushButton * cancel = new QPushButton("取消", this);
     //qApp就是Qt框架实现的QApplication类的实例，本质是一个宏。
-    connect(cancel, SIGNAL(clicked()), qApp, SLOT(quit()));
+    //connect(cancel, SIGNAL(clicked()), qApp, SLOT(quit()));
+    //connect(cancel, SIGNAL(clicked()), this, SIGNAL(cancel())); //信号可以链接信号
+    connect(cancel, SIGNAL(clicked()), this, SLOT(onCancelButton())); //链接自己的槽
+    //layout->setR
     line = new QHBoxLayout();
     line->addStretch(1);
     line->addWidget(cancel, 0, Qt::AlignRight | Qt::AlignVCenter);
     line->addWidget(submit, 0, Qt::AlignRight | Qt::AlignVCenter);
 
     mainLayout->addLayout(line);
+
+    connect(this, SIGNAL(cancel()), this, SLOT(onCnacel()));
 }
 
 void Widget::onSubmit(){
@@ -84,3 +90,52 @@ void Widget::onSubmit(){
     QMessageBox * msg = new QMessageBox(QMessageBox::Information, "测评结果", content, QMessageBox::Ok, this);
     msg->exec();
 }
+
+void Widget::onCnacel()
+{
+    //question静态方法，param: this, 标题，显示信息
+    QMessageBox::StandardButton ret = QMessageBox::question(this, "问题"
+                          ,"真的要退出测评？"
+                          ,QMessageBox::Yes | QMessageBox::No);
+    if(ret == QMessageBox::Yes) {
+        qApp->quit();
+    }
+}
+
+void Widget::onCancelButton()
+{
+    emit cancel();  //qt的关键字，不是c++的，emit是个空宏
+}
+
+/*
+MessageBox静态方法
+about..
+information...
+warning..
+question..
+critical..
+new QMessageBox
+exec()/show()
+
+ComboBox组合框方法
+addItem(QString,...)
+addItem(QIcon, QString,...)
+additems(QStringList,...)
+InsertItem(int,...)
+setItemText(...)/itemText   //设置/取
+setItemIcon(...)/itemIcom
+setItemData(...)/itemData
+
+QGridLayout表格布局方法
+addWidget(widget, row, col, ...)
+addLayout(layout, row, col, ...)
+...
+可以合并列
+
+使用槽
+从QOject(或其派生类)集成
+Q_OBJECT
+slot
+成员函数
+*/
+

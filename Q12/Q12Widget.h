@@ -17,6 +17,11 @@ protected:
 
 protected slots:  //定义槽，可以用private，public，protected修饰
     void onSubmit(); //槽就是一个函数，定义了它就必须在源文件中实现，否则链接器报无法找到
+    void onCnacel();    //实现一个槽
+    void onCancelButton();
+
+signals:    //是个宏，就是public 标记符
+    void cancel();  //像成员函数，没有任何区别
 
 private:
     QComboBox ** m_scores;

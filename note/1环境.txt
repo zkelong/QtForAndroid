@@ -1,0 +1,11 @@
+2009.03 Nokia推出Qt Creator
+支持Windows、Linux、Max OS X
+
+下载：
+http://www.qt.io
+http://qt-project.org
+http://download.qt-project.org/archive
+http://download.qt-project.org/archive/qt/
+
+JDK: 开发，包含JRE
+JRE: 运行环境

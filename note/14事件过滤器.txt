@@ -1,0 +1,16 @@
+1.事件过滤器
+ Qt事件过滤器
+  1）对象级别
+  2）应用级别--安装到整个应用上
+
+ 原生事件过滤器-native event filter
+ QCoreApplication
+ installNativeEventFilter()
+ removerNativeEventFilter()
+
+原生系统发送到qt库的事件，让qt可以处理
+
+
+事件过滤器基础
+QObject::eventFilter(QObject * watched, QEvent * event)
+QObject::installEventFilter(QObject * filterObj)

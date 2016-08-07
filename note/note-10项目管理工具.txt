@@ -1,0 +1,102 @@
+Qt项目管理
+
+1.qmake简化项目构建过程的工具
+  根据pro文件生成Makefile
+  支持条件语句，内置许多函数
+  自动生成适合用于moc和uic的构建规则
+
+2.moc--Meta-Object Compiler
+  moc处理Qt针对C++的扩展
+  qmake会自动调用moc
+  moc读取c++头文件，处理包含Q_OBJECT的类，为它们生成元对象信息：
+    生成moc_xxx.cpp
+    信号与槽
+    运行时类型信息
+    动态属性
+
+3.uic--User Interface Compiler
+  XML格式的.ui文件
+  uic读取.ui文件,生成ui_xxx.h/.cpp
+  qmake会自动调用uic
+  
+4.Makefile
+  qmake根据pro文件生成Makefile
+  Makefile包含构建规则、moc及uic规则
+  make工具根据Makefile进行编译链接
+
+5.pro文件
+..1.注释
+..comments
+..2.组件选择
+..QT += core gui widgets
+..3.模板
+..TEMPLATE = app
+..4.目标文件
+..TARGET = xx
+..5.源文件
+..SOURCE += xx.cpp
+..6.头文件
+..HEADERS += xx.h
+..7.库路径与库
+..LIBS += -LC:/abc-Lopencv-ltest  //绝对路径，相对路径，可使用类似Linux中的“:/”
+..8.头文件路径
+..头文件路径
+..INCLUDEPATH += c:/abc
+..9.定义宏
+..DEFINES += TEST_XXX
+..10.变量
+..内置变量 QT DEFINES HEADERS SOURCES CONFIG等等
+..自定义变量 MY_VAR = xxx
+..引用变量 $$VAR_NAME和$${MY_VAR}引用变量
+..11.函数
+..message输出信息
+..greaterThan等内置函数
+..12.代码块与条件测试
+..语法：
+..<condition>{
+..  <commandor definition>
+..    ..
+..}
+..使用配置信息作为条件条件测试
+..CONFIG(debug){ //配置信息，
+..  message("debug build")
+..}
+..debug:message("debug build")
+..使用平台信息作为条件测试
+..android:QT += androidextras
+..win32{
+..  INCLUDEPATH += c:/protobuf
+..  LIBS += protobuf
+..}
+..使用mkspecs作为条件测试
+..android-g++{ //针对平台的工具链。mkspecs目录
+..  message("androidid-g++);
+..  QT += androidextras
+..}
+..使用函数作为测试条件
+..equals(TARGET, "Quiz") {
+..  message("target = quiz")
+..}
+..进一步学习，Qt帮助索引qmake
+..
+
+6.pro.user
+XML文件
+保存Qt Creator生成的与你项目相关的配置。如构建套件、构建目录、中间文件目录、运行设置、构建步骤、清理步骤等等
+
+7.pri文件
+语法同pro文件
+可看成项目头文件，可放公共模块的信息
+include(xxx.pri)
+
+
+
+
+
+
+
+
+
+
+
+

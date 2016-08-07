@@ -1,6 +1,6 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2014-04-19T14:06:15
+# Project created by QtCreator 2016-08-06T13:28:33
 #
 #-------------------------------------------------
 
@@ -8,16 +8,13 @@ QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = QuitApp
+TARGET = register
 TEMPLATE = app
 
 
-SOURCES += main.cpp
+SOURCES += main.cpp\
+        widget.cpp \
+    register.cpp
 
-HEADERS  +=
-
-CONFIG += mobility
-MOBILITY = 
-!win32{
-  LIBS += -lgnustl_shared
-}
+HEADERS  += widget.h \
+    register.h

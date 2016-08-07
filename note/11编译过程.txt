@@ -1,0 +1,22 @@
+1.qmake 根据pro等文件，调用g++ 生成
+
+qmake -project
+qmake	//生成makefile
+make	//感觉makefile
+ 1)moc xxx.h
+ 2)uic xxx.ui
+ 3)${CC} -c xxx.cpp  //类，ui文件，都会生成cpp文件
+ 4)链接生成可执行文件
+make install
+
+扩展关键字--符合c++语法
+signals == public  //宏  信号函数没有实现，moc帮助生成了
+slots //空宏
+emit  //空宏
+SIGNAL //定义在qogjcedefs.h中
+SLOT  //定义在qogjcedefs.h中
+
+//下面SIGNAL(clicked())--"2clicked";SLOT(onCancelButton())--"2onSubmit"
+connect(submit, SIGNAL(clicked()), this, SLOT(onSubmit()));
+
+Qt元系统调用信号和槽需要用到这些关键字
