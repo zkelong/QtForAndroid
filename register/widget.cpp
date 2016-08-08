@@ -22,7 +22,6 @@ bool Widget::eventFilter(QObject *watched, QEvent *e)
     {
         if(((QKeyEvent*)e)->key() == Qt::Key_Home)
         {
-
             for(int i = 0; i < m_subWidgets.size(); i++)
             {
                 m_subWidgets.at(i)->deleteLater();

@@ -13,8 +13,9 @@ Register::Register(QWidget *parent) : QWidget(parent)
     layout->setRowStretch(4, 1);
     layout->setColumnStretch(1,1);
     QLabel *nameLabel = new QLabel("姓名：");
-    layout->addWidget(nameLabel, 1, 1, Qt::AlignRight | Qt::AlignVCenter);
+    layout->addWidget(nameLabel, 1, 0, Qt::AlignRight | Qt::AlignVCenter);
     m_nameEdit = new QLineEdit();
+    layout->addWidget(m_nameEdit, 1, 1, Qt::AlignLeft | Qt::AlignVCenter);
     //指向被过滤的对象，调用的是被调用对象的事件
     m_nameEdit->installEventFilter(this);
     QLabel *passwordLabel = new QLabel("密码：");
@@ -50,7 +51,7 @@ void Register::onCancelButton()
 
 bool Register::eventFilter(QObject *watched, QEvent *e)
 {
-    if(e->type() == QEvent::KeyRelease)
+    if(e->type() == QEvent::KeyPress)
     {
         QKeyEvent *ke = (QKeyEvent*) e; //左键调用backspace
         if(ke->key() == Qt::Key_Left)
