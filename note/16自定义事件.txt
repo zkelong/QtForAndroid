@@ -1,0 +1,10 @@
+自定义事件
+1）从QEvent继承--事件的基类
+2）registerEventType()	--注册全局唯一的一个事件类型，返回一个int数
+3) QCoreApplicatijon::postEvent() --发送信号
+4) 重写event()方法 --接收方需要重写该方法才能接收信号QObject的
+
+线程通信
+1）使用自定事件在线程间通信
+2）可携带自定义数据
+3）逻辑清晰，不易混乱
