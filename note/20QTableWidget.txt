@@ -1,0 +1,6 @@
+QTabelWidget
+    setItem
+    setCellWidget
+    setHorizaontalHeaderItem
+    setVerticalHeaderItem
+QTabelWidgetItem
