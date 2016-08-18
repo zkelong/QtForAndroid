@@ -21,3 +21,6 @@ HEADERS  += widget.h \
     shapefactory.h \
     shapeselector.h \
     shapetype.h
+
+RESOURCES += \
+    qrc.qrc
