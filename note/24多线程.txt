@@ -1,0 +1,15 @@
+Qt三种多线程的类库
+1）QThread--底层
+2) QThreadPool--中层
+3) QtConcurrent--高层
+
+线程与线程对象
+每个线程事件循环
+  exec()
+在线程中可用的类库
+  不依赖事件循环的类
+  QTimer、startTimer
+  QTcpSocket、QUdSocket、 QNetworkAccessManager...
+线程间通信
+  自定义事件，postEvent()
+  信号与槽

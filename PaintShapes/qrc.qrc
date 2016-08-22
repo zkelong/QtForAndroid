@@ -1,1 +1,11 @@
-<RCC/>
+<RCC>
+    <qresource prefix="/">
+        <file>roundRect.png</file>
+        <file>rect.png</file>
+        <file>points.png</file>
+        <file>line.png</file>
+        <file>ellipse.png</file>
+        <file>curve.png</file>
+        <file>eraser.png</file>
+    </qresource>
+</RCC>

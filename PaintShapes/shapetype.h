@@ -5,6 +5,7 @@ enum ShapeType {
     point = 0,
     line,
     rectangle,
+    roundRectangle,
     ellipse,
     path,
     shapes

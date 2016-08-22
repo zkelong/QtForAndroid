@@ -1,5 +1,6 @@
 #include "widget.h"
 #include "shapeselector.h"
+#include <QObject>
 #include <QApplication>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -19,7 +20,7 @@ int main(int argc, char *argv[])
 
     QHBoxLayout *actionLayout = new QHBoxLayout;
     layout->addLayout(actionLayout);
-    layout->addSpacerItem(2);
+    layout->addSpacing(2);
 
     ShapeSelector *selector = new ShapeSelector;
     selector->setMinimumSize(selector->sizeHint());
@@ -30,7 +31,7 @@ int main(int argc, char *argv[])
     btn->setToolTip("undo");
     btn->setIcon(QIcon("undo.png"));
     btn->setIconSize(iconSize);
-    QObjcet::connect(btn, SIGNAL(clicked()),
+    QObject::connect(btn, SIGNAL(clicked()),
                      paintWidget, SLOT(undo()));
     actionLayout->addWidget(btn);
 
@@ -38,13 +39,13 @@ int main(int argc, char *argv[])
     btn->setToolTip("erase all");
     btn->setIcon(QIcon("undo.png"));
     btn->setIconSize(iconSize);
-    QObjcet::connect(btn, SIGNAL(clicked()),
+    QObject::connect(btn, SIGNAL(clicked()),
                      paintWidget, SLOT(undo()));
     actionLayout->addWidget(btn);
 
     actionLayout->addStretch(1);
 
-    QObject::connect(selctor, SIGNAL(shapeChanged(int)),
+    QObject::connect(selector, SIGNAL(shapeChanged(int)),
                      paintWidget, SLOT(onShapeChanged(int)));
 
     w.show();

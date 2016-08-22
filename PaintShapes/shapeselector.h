@@ -12,8 +12,7 @@ class ShapeSelector: public QWidget
     Q_OBJECT
 public:
     ShapeSelector(QWidget *parent = 0);
-    ShapeSelector();
-    ~ShapeSelector(){}
+    ~ShapeSelector();
 
     QSize sizeHint() const {return QSize(40*shapes, 40);}
 

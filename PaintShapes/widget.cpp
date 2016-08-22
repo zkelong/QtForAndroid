@@ -1,4 +1,5 @@
 #include "widget.h"
+#include "shapetype.h"
 
 Widget::Widget(QWidget *parent)
     : QWidget(parent)
